@@ -106,13 +106,8 @@ cd RealTime-Drone-Video-Captioning
    - Download and install the CUDA toolkit from: [https://developer.nvidia.com/cuda-downloads](https://developer.nvidia.com/cuda-downloads)
    - For PyTorch GPU support, visit [https://pytorch.org/get-started/locally/](https://pytorch.org/get-started/locally/) to get the correct installation command.
 
-4. **Install Additional Dependencies:**
 
-   ```
-   sudo apt-get install libopencv-dev
-   ```
-
-5. **Install Python Dependencies:**
+4. **Install Python Dependencies:**
 
    ```
    pip3 install -r requirements.txt
