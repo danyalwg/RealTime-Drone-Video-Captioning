@@ -81,7 +81,7 @@ The primary goal of this project is to deliver a robust, real-time video caption
 Open your terminal (or Command Prompt on Windows) and run:
 
 ```
-git clone https://github.com/your-username/RealTime-Drone-Video-Captioning.git
+git clone https://github.com/danyalwg/RealTime-Drone-Video-Captioning.git
 cd RealTime-Drone-Video-Captioning
 ```
 
