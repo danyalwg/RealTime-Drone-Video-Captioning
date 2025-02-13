@@ -1,0 +1,10 @@
+PyQt5
+opencv-python
+transformers
+qdarkstyle
+Flask
+matplotlib
+numpy
+requests
+scipy
+Pillow
