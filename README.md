@@ -15,34 +15,25 @@
     - [Training Setup](#training-setup)
     - [Data Preparation and Augmentation](#data-preparation-and-augmentation)
     - [Model Adaptation and Training Process](#model-adaptation-and-training-process)
-    - [Plot Generation and Annotation](#plot-generation-and-annotation)
+    - [Plot Generation, Annotation, and Analysis](#plot-generation-annotation-and-analysis)
 7. [Advanced Features and Configurations](#advanced-features-and-configurations)
-    - [Multi-Source Video Input Handling](#multi-source-video-input-handling)
-    - [Real-Time Metrics and Logging](#real-time-metrics-and-logging)
-    - [Thread Safety and Concurrency](#thread-safety-and-concurrency)
 8. [Troubleshooting and FAQ](#troubleshooting-and-faq)
-9. [Repository Structure and Contribution Guidelines](#repository-structure-and-contribution-guidelines)
-10. [Performance Metrics and System Requirements](#performance-metrics-and-system-requirements)
-11. [Future Enhancements](#future-enhancements)
-12. [Appendices and References](#appendices-and-references)
 
 ---
 
 ## Introduction
 
-Welcome to the **RealTime-Drone-Video-Captioning** project! This repository houses a sophisticated Python application designed for real-time captioning of drone video feeds. Leveraging a fine-tuned BLIP model from Salesforce, the application provides accurate, context-aware captions for various video inputs including files, RTSP streams, and USB cameras. This document is a comprehensive guide intended for developers, system administrators, and end-users interested in understanding every facet of the project.
+Welcome to the **RealTime-Drone-Video-Captioning** project! This repository houses a sophisticated Python application designed for real-time captioning of drone video feeds. Leveraging a fine-tuned BLIP model from Salesforce, the application provides accurate, context-aware captions for various video inputs including files, RTSP streams, and USB cameras. This guide is intended for developers, system administrators, and end-users who want to understand every detail of the project.
 
 ---
 
 ## Project Overview
 
-The primary goal of this project is to deliver a robust, real-time video captioning solution with an intuitive GUI built on PyQt5. The system comprises three major components:
+The primary goal of this project is to deliver a robust, real-time video captioning solution with an intuitive GUI built using PyQt5. The system is divided into three core components:
 
-- **Video Input Module:** Supports multiple sources (video file, RTSP, and USB camera).
+- **Video Input Module:** Supports video files, RTSP streams, and USB cameras.
 - **Captioning Module:** Utilizes a fine-tuned BLIP model to generate descriptive captions on the fly.
-- **Log Monitoring Module:** A Flask-based web server that displays real-time terminal logs.
-
-The design emphasizes high performance, modularity, and thread-safe operations, ensuring seamless integration even under resource-constrained environments.
+- **Log Monitoring Module:** A Flask-based web server displays real-time terminal logs.
 
 ---
 
@@ -51,39 +42,35 @@ The design emphasizes high performance, modularity, and thread-safe operations, 
 ### Module Descriptions
 
 1. **User Interface (UI):**
-   - **Framework:** Built using PyQt5.
-   - **Features:** Tab-based navigation for switching between the main video display and the terminal log.
-   - **Components:** Video display area, caption label, control buttons (Start/Stop), input selectors, and metrics display.
+   - **Framework:** Developed with PyQt5.
+   - **Features:** Tab-based navigation for switching between video display and terminal logs.
+   - **Components:** Video display area, caption label, control buttons (Start/Stop), input selectors, and performance metrics.
 
 2. **Video Processing & Captioning:**
-   - **Frame Capture:** Utilizes OpenCV for reading frames from various video sources.
-   - **Captioning:** A dedicated `QThread` (`CaptionThread`) is used to process frames and generate captions using the BLIP model.
-   - **Metrics Calculation:** Real-time computation of video FPS and inference FPS.
+   - **Frame Capture:** Uses OpenCV to read frames from various video sources.
+   - **Captioning:** A dedicated `QThread` (`CaptionThread`) processes frames and generates captions using the BLIP model.
+   - **Metrics:** Real-time computation of video FPS and inference FPS.
 
 3. **Log Server:**
    - **Technology:** Flask web server.
-   - **Functionality:** Provides an auto-refreshing webpage displaying timestamped terminal logs.
-   - **Thread Safety:** Uses Python threading locks to ensure safe concurrent access to log data.
+   - **Functionality:** Displays timestamped terminal logs with auto-refresh (every 5 seconds).
+   - **Thread Safety:** Uses Python threading locks for concurrent log updates.
 
 ### Code Walkthrough
 
-Below is a high-level overview of the key code components:
-
 - **Main Application File (`app.py`):**
-  - **Initialization:** Sets up the PyQt5 application, applies a dark theme using qdarkstyle, and initializes the main window.
-  - **Model Loading:** Loads the BLIP model and processor, determining the computing device (CUDA if available).
-  - **Thread Management:** Manages separate threads for video processing and Flask server operation.
+  - Initializes the PyQt5 application, applies a dark theme with qdarkstyle, and sets up the main window.
+  - Loads the BLIP model and processor, selecting CUDA if available.
+  - Manages separate threads for video capture, caption generation, and the Flask log server.
 
 - **CaptionThread Class:**
-  - **Purpose:** Continuously retrieves the latest frame and processes it to generate a caption.
-  - **Mechanism:** Uses a loop with a sleep interval (`msleep`) to balance performance and responsiveness.
-  - **Signal Emission:** Uses Qt signals (`caption_generated`) to update the UI asynchronously.
+  - Continuously retrieves the latest video frame and generates a caption.
+  - Utilizes a sleep interval to balance performance and responsiveness.
+  - Emits signals (`caption_generated`) to update the UI asynchronously.
 
 - **Flask App:**
-  - **Route:** The root route ("/") renders an HTML template displaying real-time logs.
-  - **Auto-Refresh:** The template includes a meta-refresh tag set to refresh every 5 seconds.
-
-For an in-depth look at the code, refer to the inline comments and function docstrings within `app.py`.
+  - Hosts a web page at the root route ("/") that displays live terminal logs.
+  - The HTML template includes a meta-refresh tag for auto-updating every 5 seconds.
 
 ---
 
@@ -91,7 +78,7 @@ For an in-depth look at the code, refer to the inline comments and function docs
 
 ### Cloning the Repository
 
-To clone the repository, open your terminal (or Command Prompt on Windows) and execute the following commands:
+Open your terminal (or Command Prompt on Windows) and run:
 
 ```
 git clone https://github.com/your-username/RealTime-Drone-Video-Captioning.git
@@ -102,8 +89,6 @@ cd RealTime-Drone-Video-Captioning
 
 1. **Update System Packages:**
 
-   Open your terminal and run:
-   
    ```
    sudo apt-get update
    sudo apt-get upgrade
@@ -115,17 +100,19 @@ cd RealTime-Drone-Video-Captioning
    sudo apt-get install python3 python3-pip
    ```
 
-3. **Install Additional Dependencies:**
-   
-   Some system libraries may be required for OpenCV:
-   
+3. **Install NVIDIA Drivers and CUDA:**
+
+   - Ensure your system has the appropriate NVIDIA drivers installed.
+   - Download and install the CUDA toolkit from: [https://developer.nvidia.com/cuda-downloads](https://developer.nvidia.com/cuda-downloads)
+   - For PyTorch GPU support, visit [https://pytorch.org/get-started/locally/](https://pytorch.org/get-started/locally/) to get the correct installation command.
+
+4. **Install Additional Dependencies:**
+
    ```
    sudo apt-get install libopencv-dev
    ```
-   
-   Refer to the [OpenCV Ubuntu Installation Guide](https://docs.opencv.org/master/d7/d9f/tutorial_linux_install.html) for more details.
 
-4. **Install Python Dependencies:**
+5. **Install Python Dependencies:**
 
    ```
    pip3 install -r requirements.txt
@@ -134,26 +121,24 @@ cd RealTime-Drone-Video-Captioning
 ### Setup on Windows
 
 1. **Install Python 3:**
-   
    - Download the latest Python 3 installer from [Python Downloads for Windows](https://www.python.org/downloads/windows/).
-   - Run the installer and ensure you select the option to add Python to your PATH.
+   - Run the installer and ensure that Python is added to your system PATH.
 
-2. **Install Visual C++ Build Tools:**
-   
-   Some packages (e.g., PyQt5) may require additional build tools. If prompted, follow the on-screen instructions to install them.
+2. **Install NVIDIA Drivers and CUDA:**
+   - Download and install the latest NVIDIA drivers and the CUDA toolkit from: [https://developer.nvidia.com/cuda-downloads](https://developer.nvidia.com/cuda-downloads)
+   - For PyTorch GPU support, visit [https://pytorch.org/get-started/locally/](https://pytorch.org/get-started/locally/) and follow the instructions for your configuration.
+   - **Note:** C++ Build Tools are not required for this project.
 
 3. **Install Python Dependencies:**
 
    Open Command Prompt and run:
-   
+
    ```
    pip3 install -r requirements.txt
    ```
 
 4. **Verify Installation:**
-   
-   To check if all packages are installed correctly, you can run:
-   
+
    ```
    python3 -c "import cv2, torch, PyQt5, flask, transformers"
    ```
@@ -163,40 +148,38 @@ cd RealTime-Drone-Video-Captioning
 ## Usage Instructions
 
 1. **Starting the Application:**
-   
-   Navigate to the repository folder and run the application using:
-   
+
+   Navigate to the repository folder and run:
+
    ```
    python3 app.py
    ```
 
 2. **Interacting with the UI:**
-   
    - **Main Tab:**  
      - Select a video source (File, RTSP, or USB Camera).
      - Click "Start" to begin video capture.
-     - Real-time captions and metrics (video FPS and inference FPS) will be displayed.
-   
+     - View real-time captions and performance metrics (video FPS and inference FPS).
    - **Terminal Tab:**  
-     - View real-time logs capturing every event (e.g., video source selection, caption generation).
+     - Monitor real-time logs that capture every event (e.g., video source selection, caption generation).
 
 3. **Accessing the Flask Log Server:**
-   
-   Open a web browser and navigate to `http://localhost:5000` to view live terminal logs with an auto-refresh every 5 seconds.
+
+   Open your web browser and navigate to `http://localhost:5000` to view live terminal logs.
 
 ---
 
 ## Fine-Tuning the BLIP Model
 
-The BLIP model (Salesforce/blip-image-captioning-large) was fine-tuned to cater to domain-specific requirements, ensuring enhanced caption quality and contextual accuracy. Below is an exhaustive breakdown of the fine-tuning process.
+The BLIP model (Salesforce/blip-image-captioning-large) was fine-tuned to meet domain-specific requirements. The process enhanced the model’s caption quality and contextual accuracy.
 
 ### Training Setup
 
 - **Base Model:** Salesforce/blip-image-captioning-large
 - **Dataset:** A custom, domain-specific image-caption dataset curated from drone footage.
-- **Hardware:** Utilized high-end GPUs (CUDA-enabled) to expedite training.
+- **Hardware:** Utilized CUDA-enabled GPUs for accelerated training.
 - **Hyperparameters:**
-  - **Learning Rate:** 1e-5 (with warm-up scheduler)
+  - **Learning Rate:** 1e-5 (with a warm-up scheduler)
   - **Batch Size:** 16
   - **Epochs:** 500
   - **Optimizer:** AdamW with weight decay
@@ -204,68 +187,78 @@ The BLIP model (Salesforce/blip-image-captioning-large) was fine-tuned to cater 
 
 ### Data Preparation and Augmentation
 
-- **Preprocessing:**
-  - All images were resized to a standard resolution (384x384) for consistency.
-  - Normalization was performed using ImageNet statistics.
-- **Data Augmentation:**
-  - Techniques such as random cropping, rotation, and color jitter were applied.
-  - Augmented data improved robustness by simulating various real-world conditions.
+- **Preprocessing:**  
+  - Resize images to a standard resolution (384x384).
+  - Normalize images using ImageNet statistics.
+- **Data Augmentation:**  
+  - Apply techniques such as random cropping, rotation, and color jitter.
+  - These augmentations improve model robustness by simulating varied real-world conditions.
 
 ### Model Adaptation and Training Process
 
 1. **Model Initialization:**
-   - The pre-trained BLIP model was loaded and its final layers were reconfigured to accommodate the custom dataset's vocabulary.
+   - Load the pre-trained BLIP model and reconfigure its final layers to match the custom dataset’s vocabulary.
    
 2. **Training Procedure:**
-   - The model was trained over 500 epochs.
-   - At every epoch, the following metrics were logged:
+   - Train the model over 500 epochs.
+   - Log key metrics at each epoch:
      - Training Loss
      - Validation Loss
      - BLEU, CIDEr, METEOR, and ROUGE scores
-     
+
 3. **Validation:**
-   - A separate validation set was used to evaluate the model’s performance after each epoch.
-   - The best-performing epoch was marked based on a combination of loss and metric improvements.
+   - Use a validation set to evaluate performance after each epoch.
+   - The best epoch is marked based on a combination of loss and metric improvements.
 
-### Plot Generation and Annotation
+### Plot Generation, Annotation, and Analysis
 
-- **Visualization:**
-  - Loss and metric curves were generated using Matplotlib.
-  - Noise reduction techniques were applied to smooth the curves.
-- **Annotations:**
-  - Each plot includes arrows pointing to the best performance points.
-  - Epoch and metric values are clearly labeled for in-depth analysis.
+The training process generates several plots to monitor model performance. All plots are saved in the **plots** folder in the repository.
+
+1. **BLEU Score vs Epoch**  
+   - **Description:** Evaluates the quality of machine-generated translations.
+   - **Trend:** Increases steadily, peaking around epoch 492 (score: 0.82).
+   - **Key Takeaway:** Translation quality improves with training, stabilizing after ~epoch 400.
+
+2. **CIDEr Score vs Epoch**  
+   - **Description:** Measures the similarity between generated and reference captions.
+   - **Trend:** Increases steadily, peaking at epoch 458 (score: 8.20).
+   - **Key Takeaway:** Best captioning performance is achieved around epoch 450.
+
+3. **METEOR Score vs Epoch**  
+   - **Description:** Considers synonyms, stemming, and paraphrasing in translations.
+   - **Trend:** Grows steadily, peaking at epoch 472 (score: 0.77).
+   - **Key Takeaway:** Indicates continuous quality improvements until about epoch 470.
+
+4. **ROUGE Score vs Epoch**  
+   - **Description:** Measures recall overlap between model outputs and references.
+   - **Trend:** Increases and peaks at epoch 396 (score: 0.83).
+   - **Key Takeaway:** Summarization performance improves and stabilizes around epoch 400.
+
+5. **Training Loss vs Epoch**  
+   - **Description:** Shows how well the model fits the training data.
+   - **Trend:** Decreases from ~3.0 to a minimum of 0.41 at epoch 472.
+   - **Key Takeaway:** Lower training loss indicates better model fitting, with diminishing returns after epoch 470.
+
+6. **Validation Loss vs Epoch**  
+   - **Description:** Indicates how well the model generalizes to unseen data.
+   - **Trend:** Decreases steadily, reaching 0.61 at epoch 478 before stabilizing.
+   - **Key Takeaway:** Demonstrates good generalization with optimal performance around epoch 470–480.
 
 ---
 
 ## Advanced Features and Configurations
 
-### Multi-Source Video Input Handling
-
-- **File Input:**  
-  Users can select local video files in formats such as MP4, AVI, and MOV.
-- **RTSP Streams:**  
-  Allows live streaming from RTSP-compatible cameras.
-- **USB Camera:**  
-  The application dynamically detects available USB cameras and populates a dropdown list for selection.
-
-### Real-Time Metrics and Logging
-
-- **Performance Metrics:**
-  - **Video FPS:** Calculated by counting frames over elapsed time.
-  - **Inference FPS:** Computed based on the frequency of caption generation.
-- **Thread-Safe Logging:**
-  - Logging is managed using Python’s `threading.Lock` to ensure safe concurrent updates.
-  - Logs are displayed both in the UI and on the Flask log server.
-
-### Thread Safety and Concurrency
-
-- **Video Capture and Processing:**
-  - A dedicated thread handles the video capture to avoid UI blocking.
-  - The `CaptionThread` processes frames in parallel, emitting signals to update the GUI asynchronously.
-- **Flask Server:**
-  - Runs on a separate daemon thread, ensuring it does not interfere with the main application.
-  - Employs thread-safe mechanisms to share log data with the PyQt5 UI.
+- **Multi-Source Video Input Handling:**  
+  Supports video files, RTSP streams, and USB cameras with dynamic source detection.
+  
+- **Real-Time Metrics and Logging:**  
+  Displays live video and inference FPS; logs are updated concurrently in both the UI and Flask web server.
+  
+- **Thread Safety and Concurrency:**  
+  Uses dedicated threads (e.g., `CaptionThread`) for video capture and processing to ensure smooth UI performance.
+  
+- **Flask Server:**  
+  Runs on a separate daemon thread to display terminal logs with automatic refresh.
 
 ---
 
@@ -274,135 +267,28 @@ The BLIP model (Salesforce/blip-image-captioning-large) was fine-tuned to cater 
 ### Common Issues
 
 1. **Video Source Not Starting:**
-   - Ensure the selected video file or stream URL is valid.
-   - Verify that the required codecs and drivers are installed.
+   - Verify that the selected video file or stream URL is valid.
+   - Ensure all required codecs and drivers are installed.
 
 2. **Model Loading Errors:**
    - Check that the Transformers library is installed and updated.
-   - Verify GPU availability if using CUDA.
+   - Confirm GPU availability when using CUDA.
 
 3. **Flask Server Inaccessible:**
-   - Ensure that no other service is running on port 5000.
-   - Check firewall settings on your system.
+   - Ensure no other service is using port 5000.
+   - Review your system’s firewall settings.
 
-### Frequently Asked Questions
+### FAQ
 
 - **Q:** What if the video freezes during processing?  
-  **A:** This may be due to insufficient system resources. Try reducing the video resolution or running the application on a more powerful machine.
+  **A:** This may be due to insufficient system resources. Try reducing the video resolution or using a more powerful machine.
 
 - **Q:** How can I add support for additional video formats?  
-  **A:** Modify the file dialog filter in the `open_file` method within `app.py` to include the desired formats.
+  **A:** Update the file dialog filter in the `open_file` method within `app.py` to include the new formats.
 
 - **Q:** Can I customize the fine-tuning parameters of the BLIP model?  
-  **A:** Yes, refer to the fine-tuning section and adjust the hyperparameters in your training script accordingly.
+  **A:** Yes, adjust the hyperparameters in your training script as needed.
 
 ---
 
-## Repository Structure and Contribution Guidelines
-
-### Repository Layout
-
-The suggested structure of the repository is as follows:
-
-```
-RealTime-Drone-Video-Captioning/
-├── app.py                 # Main application code
-├── requirements.txt       # Python dependencies list
-├── README.md              # This comprehensive documentation file
-```
-
-### Contribution Guidelines
-
-1. **Code Style:**  
-   - Follow PEP8 standards.
-   - Include comprehensive comments and docstrings for clarity.
-
-2. **Pull Requests:**  
-   - Ensure your branch is up-to-date with the main branch.
-   - Provide detailed descriptions of your changes.
-   - Include tests for any new features or bug fixes.
-
-3. **Issue Reporting:**  
-   - Provide clear steps to reproduce any issues.
-   - Attach relevant log files and screenshots.
-
----
-
-## Performance Metrics and System Requirements
-
-### System Requirements
-
-- **Minimum Requirements:**
-  - Python 3.7 or later
-  - 4 GB RAM
-  - Integrated graphics (for basic usage)
-
-- **Recommended Requirements:**
-  - Python 3.8 or later
-  - 16 GB RAM
-  - NVIDIA GPU with CUDA support for accelerated inference
-  - SSD storage for faster data access
-
-### Performance Metrics
-
-- **Video Processing:**
-  - The application typically achieves 25–30 FPS on standard hardware.
-- **Captioning Inference:**
-  - Depending on the hardware, inference FPS can vary significantly.
-- **Monitoring:**
-  - Real-time metrics are displayed in the UI and can be logged for post-analysis.
-
----
-
-## Future Enhancements
-
-1. **Model Improvements:**
-   - Explore further fine-tuning with larger, more diverse datasets.
-   - Integrate state-of-the-art captioning models as they become available.
-
-2. **User Interface:**
-   - Implement customizable UI themes.
-   - Add support for multi-language captions.
-
-3. **Advanced Logging:**
-   - Enhance log server functionality with filtering and search capabilities.
-   - Integrate cloud-based logging for remote monitoring.
-
-4. **Extensibility:**
-   - Develop plugins for additional video sources (e.g., IP cameras, RTMP streams).
-   - Implement automated testing frameworks for continuous integration.
-
----
-
-## Appendices and References
-
-### Appendix A: Detailed API Reference
-
-- **MainWindow Class:**  
-  - Methods: `init_ui()`, `start_video()`, `stop_video()`, `update_frame()`, `update_caption()`
-  - Signals: Emitted via the `CaptionThread` to update UI elements.
-
-- **CaptionThread Class:**  
-  - Methods: `run()`, `stop()`
-  - Usage: Dedicated thread for handling model inference and caption generation.
-
-### Appendix B: External Resources
-
-- **Python:** [https://www.python.org](https://www.python.org)
-- **PyQt5:** [https://www.riverbankcomputing.com/software/pyqt/intro](https://www.riverbankcomputing.com/software/pyqt/intro)
-- **OpenCV:** [https://opencv.org](https://opencv.org)
-- **PyTorch:** [https://pytorch.org](https://pytorch.org)
-- **Transformers:** [https://huggingface.co/transformers](https://huggingface.co/transformers)
-- **Flask:** [https://flask.palletsprojects.com](https://flask.palletsprojects.com)
-
-### Appendix C: Licensing and Credits
-
-This project is released under the MIT License. Please refer to the [LICENSE](LICENSE) file for more information. Special thanks to the developers and contributors of PyQt5, OpenCV, PyTorch, and Hugging Face for their invaluable libraries.
-
----
-
-*For any further questions, enhancements, or contributions, please feel free to open an issue or submit a pull request. Your feedback is highly appreciated!*
-
----
-
-© 2025 RealTime-Drone-Video-Captioning. All rights reserved.
+*End of README*
